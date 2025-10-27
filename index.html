@@ -794,7 +794,7 @@ Token: ${token}
     });
 
     function parseCSVCorretoras(txt){
-      const lines = txt.replace(/\\r/g,'').split('\\n').filter(Boolean);
+      const lines = txt.replace(/\r/g,'').split('\n').filter(Boolean);
       if(lines.length===0) return [];
       const sep = (lines[0].includes(';') && !lines[0].includes(',')) ? ';' : ',';
       const headers = lines[0].split(sep).map(h=>h.trim().toLowerCase());
@@ -894,7 +894,7 @@ Token: ${token}
         });
       });
 
-      box.querySelectorAll('.btnDelUser').forEach	btn=>{
+      box.querySelectorAll('.btnDelUser').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           const id = btn.getAttribute('data-id');
           if(confirm('Excluir este usuário?')){
