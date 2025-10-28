@@ -1,16 +1,13 @@
 {
-  "name": "atcdoficial-backend",
+  "name": "atcd-login-neon",
   "version": "1.0.0",
   "private": true,
-  "description": "Netlify Functions backend for Neon PostgreSQL",
-  "main": "index.js",
-  "license": "UNLICENSED",
   "scripts": {
-    "postinstall": "echo Using Netlify Functions with pg",
-    "build": "echo No build step for static frontend",
-    "start": "echo Use Netlify dev to emulate functions"
+    "start": "netlify dev"
   },
   "dependencies": {
-    "pg": "^8.11.5"
+    "pg": "^8.11.3",
+    "bcryptjs": "^2.4.3",
+    "uuid": "^9.0.1"
   }
 }

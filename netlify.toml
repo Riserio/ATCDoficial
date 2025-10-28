@@ -1,9 +1,9 @@
 [build]
-  publish = "."
-  functions = "netlify/functions"
+command = "npm i"
+publish = "."
+functions = "netlify/functions"
 
-# Optional: single-page app fallback; keep if your index.html handles routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+[functions]
+external_node_modules = ["pg", "bcryptjs", "uuid"]
+node_bundler = "esbuild"
+included_files = ["netlify/functions/**"]
