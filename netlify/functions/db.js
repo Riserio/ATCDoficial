@@ -1,29 +1,23 @@
-\
-/**
- * /.netlify/functions/db
- * Simple Neon PostgreSQL connectivity check using pg Pool.
- * IMPORTANT: Set NEON_DB_URL in Netlify → Site settings → Environment variables.
- */
+// Salve como UTF-8 sem BOM
 const { Pool } = require("pg");
 
-let _pool;
-function getPool() {
-  if (_pool) return _pool;
-  _pool = new Pool({
-    connectionString: process.env.NEON_DB_URL,
-    ssl: { rejectUnauthorized: false }
-  });
-  return _pool;
-}
+let pool;
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
   try {
-    const pool = getPool();
-    const q = event.httpMethod === "POST" && event.body
-      ? JSON.parse(event.body).query || "SELECT NOW() AS now"
-      : "SELECT NOW() AS now";
+    const connStr = process.env.NEON_DB_URL;
+    if (!connStr) {
+      return { statusCode: 500, body: "NEON_DB_URL não definida" };
+    }
 
-    const result = await pool.query(q);
+    if (!pool) {
+      pool = new Pool({
+        connectionString: connStr,
+        ssl: { rejectUnauthorized: false }
+      });
+    }
+
+    const result = await pool.query("SELECT NOW() AS now");
     return {
       statusCode: 200,
       headers: { "content-type": "application/json" },
