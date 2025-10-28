@@ -21,7 +21,7 @@
     .left,.right{display:flex;gap:8px;align-items:center}
     h1{font-size:18px;margin:0;display:flex;gap:10px;align-items:center}
     .badge{background:var(--brand);color:#fff;border-radius:999px;padding:6px 10px;font-weight:600;cursor:pointer}
-    .logo{height:28px;width:auto;cursor:pointer} /* logo pequena e clicável */
+    .logo{height:28px;width:auto;cursor:pointer}
     input[type=search],select,button,.btn{border:1px solid #d1d5db;background:#fff;border-radius:12px;padding:10px 12px}
     input[type=search]{min-width:280px}
     button.primary{background:var(--brand);color:#fff;border-color:transparent;box-shadow:var(--shadow)}
@@ -50,13 +50,11 @@
 
     .dropzone{border:2px dashed #dbeafe;border-radius:12px;padding:10px;text-align:center;color:#6b7280}
 
-    /* Cor da coluna: só quadrinho; clicável apenas para admin */
     .color-wrap{display:flex;align-items:center;gap:8px}
     .color-chip{width:18px;height:18px;border-radius:6px;border:1px solid #cbd5e1;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
     .color-chip.clickable{cursor:pointer}
     .color-input{appearance:none;width:0;height:0;border:0;padding:0}
 
-    /* Modal */
     dialog{border:none;border-radius:16px;box-shadow:var(--shadow);width:min(920px,92vw)}
     form.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
     .field{display:flex;flex-direction:column;gap:6px}
@@ -71,7 +69,6 @@
     @media (max-width:1100px){.columns{grid-template-columns:repeat(2,minmax(260px,1fr));}}
     @media (max-width:640px){.columns{grid-template-columns:1fr} input[type=search]{min-width:unset;width:100%}}
 
-    /* Login overlay */
     .login-wrap{position:fixed;inset:0;background:linear-gradient(180deg,#eef2ff,#ffffff);display:none;place-items:center;z-index:50}
     .login-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:var(--shadow);width:min(420px,92vw);padding:18px;display:flex;flex-direction:column;gap:12px}
     .login-card h2{margin:0 0 4px 0}
@@ -81,11 +78,9 @@
     .eye-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:none;background:transparent;cursor:pointer;padding:4px}
     .eye{width:18px;height:18px;display:inline-block}
 
-    /* Usuários (admin) */
     .user-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:200px;overflow:auto;border:1px solid #eef2ff;padding:8px;border-radius:10px}
     .user-item{display:flex;justify-content:space-between;gap:8px}
 
-    /* Tabela do modal Corretoras (agora sem scroll, tudo visível) */
     #tblCorretoras button[disabled]{opacity:.5; cursor:not-allowed}
   </style>
 </head>
@@ -93,7 +88,6 @@
   <header>
     <div class="bar">
       <div class="left">
-        <!-- Logo: troca via upload ao clicar -->
         <img id="appLogo" src="https://s3.amazonaws.com/bboneapp/Upload/logo/118/1693835269065_capturadetela2023-09-04as10.46.05.png" alt="BP" class="logo" title="Clique para alterar a logo" />
         <input id="logoInput" type="file" accept="image/*" style="display:none" />
         <h1>FILIAL ATCD <span id="badgeCorretoras" class="badge" title="Clique para gerenciar a lista de corretoras (CSV/JSON + CRUD)">Corretoras</span></h1>
@@ -115,7 +109,6 @@
         <button id="btnExportCSV">Exportar CSV</button>
         <label class="btn" for="importFile" style="cursor:pointer">Importar JSON</label>
         <input id="importFile" type="file" accept="application/json" style="display:none" />
-        <!-- visível só para admin -->
         <button id="btnUsers" style="display:none">Usuários</button>
         <button id="btnLogout">Sair</button>
       </div>
@@ -125,7 +118,7 @@
   <div class="wrap">
     <div class="columns" id="board"></div>
     <footer style="margin-top:18px;display:flex;justify-content:space-between;align-items:center">
-      <small>Dados salvos automaticamente no seu navegador (localStorage).</small>
+      <small>Corretoras e Atendimentos persistidos no banco (Neon). Preferências de UI salvas localmente.</small>
       <div class="toolbar">
         <button id="btnExemplo" class="ghost">Carregar exemplos</button>
         <button id="btnZerar" class="ghost" title="Apagar tudo">Limpar quadro</button>
@@ -138,7 +131,6 @@
     <form id="form" method="dialog" class="grid">
       <h3 class="span-12" style="margin:0 0 6px 0">Cadastro de Atendimento</h3>
       <input type="hidden" id="id" />
-      <!-- Corretora agora é SELECT (não editável) -->
       <div class="field span-6">
         <label for="corretora">Corretora *</label>
         <select id="corretora" required>
@@ -166,7 +158,7 @@
     </form>
   </dialog>
 
-  <!-- Modal de Usuários (CRUD completo, apenas admin) -->
+  <!-- Modal de Usuários (ainda local — posso migrar depois) -->
   <dialog id="modalUsers">
     <form id="formUser" method="dialog" class="grid">
       <h3 class="span-12" style="margin:0 0 6px 0">Gerenciar Usuários</h3>
@@ -191,7 +183,7 @@
     </form>
   </dialog>
 
-  <!-- Modal de Corretoras (CRUD + Import) -->
+  <!-- Modal de Corretoras -->
   <dialog id="modalCorretoras">
     <form id="formCorretora" method="dialog" class="grid" style="min-width:min(920px,92vw)">
       <h3 class="span-12" style="margin:0 0 6px 0">Corretoras</h3>
@@ -203,7 +195,6 @@
         <small class="muted" id="hintPerfilCorretoras"></small>
       </div>
 
-      <!-- sem scroll: removidos overflow/max-height -->
       <div class="span-12" style="border:1px solid #eef2ff;border-radius:12px">
         <table id="tblCorretoras" style="width:100%;border-collapse:collapse">
           <thead>
@@ -219,7 +210,7 @@
 
       <div class="field span-6"><label for="c_nome">Nome</label><input id="c_nome" /></div>
       <div class="field span-4"><label for="c_cnpj">CNPJ</label><input id="c_cnpj" placeholder="somente números ou formatado" /></div>
-      <input type="hidden" id="c_idx" />
+      <input type="hidden" id="c_id" />
       <div class="span-12" style="display:flex;justify-content:flex-end;gap:8px">
         <button type="button" id="btnFecharCorretoras">Fechar</button>
         <button class="primary" id="btnSalvarCorretora">Salvar</button>
@@ -227,7 +218,6 @@
     </form>
   </dialog>
 
-  <!-- Overlay de Login -->
   <div class="login-wrap" id="loginWrap">
     <div class="login-card">
       <img id="loginLogo" class="login-logo" alt="Logo" />
@@ -253,15 +243,15 @@
   </div>
 
   <script>
-    // ===== Chaves e helpers =====
-    const KEY = 'kanban_corretoras_v1';
+    // ===== Helpers & estado (somente UI em localStorage) =====
     const KEY_COLORS = 'kanban_corretoras_colors_v1';
-    const KEY_LISTA_CORRETORAS = 'kanban_lista_corretoras_v1';
     const KEY_USERS = 'kanban_users_v1';
     const KEY_SESSION = 'kanban_session_v1';
     const KEY_LOGO = 'kanban_logo_v1';
     const KEY_RESET = 'kanban_reset_tokens_v1';
     const $ = s=>document.querySelector(s);
+    function load(k, fallback){ try{ return JSON.parse(localStorage.getItem(k)) ?? fallback }catch{ return fallback } }
+    function save(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 
     const initialColumns = [
       { key:'novo', title:'Novo' },
@@ -269,20 +259,65 @@
       { key:'aguardando', title:'Aguardando retorno' },
       { key:'concluido', title:'Concluído' },
     ];
-
-    // ===== Persistência =====
-    let items = load(KEY, []);
-    function load(k, fallback){ try{ return JSON.parse(localStorage.getItem(k)) ?? fallback }catch{ return fallback } }
-    function save(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
-
     const defaultColors = { novo:'#e0e7ff', andamento:'#dbeafe', aguardando:'#fff7ed', concluido:'#dcfce7' };
     let colors = load(KEY_COLORS, {});
-    let listaCorretoras = load(KEY_LISTA_CORRETORAS, []);
+
+    // ===== Estado de dados (agora em memória; origem = Neon via API) =====
+    let _corretoras = [];
+    let _atendimentos = [];
+
+    // ===== API Corretoras =====
+    async function apiListarCorretoras() {
+      const r = await fetch('/.netlify/functions/corretoras_list');
+      return r.json();
+    }
+    async function apiInserirCorretora(payload) {
+      const r = await fetch('/.netlify/functions/corretoras_insert', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+      return r.json();
+    }
+    async function apiAtualizarCorretora(payload) {
+      const r = await fetch('/.netlify/functions/corretoras_update', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+      return r.json();
+    }
+    async function apiExcluirCorretora(id) {
+      const r = await fetch('/.netlify/functions/corretoras_delete', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id })
+      });
+      return r.json();
+    }
+
+    // ===== API Atendimentos =====
+    async function apiListarAtendimentos() {
+      const r = await fetch('/.netlify/functions/atendimentos_list');
+      return r.json(); // { ok, rows }
+    }
+    async function apiInserirAtendimento(payload) {
+      const r = await fetch('/.netlify/functions/atendimentos_insert', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+      return r.json();
+    }
+    async function apiAtualizarAtendimento(payload) {
+      const r = await fetch('/.netlify/functions/atendimentos_update', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+      });
+      return r.json();
+    }
+    async function apiExcluirAtendimento(id) {
+      const r = await fetch('/.netlify/functions/atendimentos_delete', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ id })
+      });
+      return r.json();
+    }
+
+    // ===== Login / Sessão (ainda local; posso migrar p/ banco depois) =====
     let users = load(KEY_USERS, []);
     let session = load(KEY_SESSION, null);
     let resetTokens = load(KEY_RESET, {});
-
-    // Seed demo users se vazio
     if(!Array.isArray(users) || users.length===0){
       users = [
         { id: uid(), nome:'Administrador', email:'admin@bp', senha:'admin', perfil:'admin' },
@@ -290,37 +325,24 @@
       ];
       save(KEY_USERS, users);
     }
-
-    // ===== Login / Sessão =====
     const loginWrap = $('#loginWrap');
     const loginLogo = $('#loginLogo');
     const savedLogo = localStorage.getItem(KEY_LOGO);
     if(savedLogo){ loginLogo.src = savedLogo; loginLogo.style.display='block'; } else { loginLogo.style.display='none'; }
-
     function getSession(){ return session; }
     function setSession(sess){ session = sess; save(KEY_SESSION, session); applySessionUI(); render(); }
     function logout(){ setSession(null); showLogin(true); }
     function showLogin(show){ loginWrap.style.display = show? 'grid':'none'; }
-
     function applySessionUI(){
       const isAdmin = session?.perfil==='admin';
-      // botão de usuários só para admin
       $('#btnUsers').style.display = isAdmin? 'inline-block':'none';
-      // responsável automático (placeholder)
       const resp = $('#responsavel');
       if(resp){
         resp.value = session?.nome || '';
         resp.placeholder = session?.nome || 'Responsável';
       }
     }
-
-    // Mostrar/ocultar senha
-    $('#btnTogglePwd').addEventListener('click', ()=>{
-      const inp = $('#l_senha');
-      inp.type = (inp.type === 'password') ? 'text' : 'password';
-    });
-
-    // Esqueci a senha
+    $('#btnTogglePwd').addEventListener('click', ()=>{ const inp = $('#l_senha'); inp.type = (inp.type==='password')?'text':'password'; });
     $('#lnkForgot').addEventListener('click', (e)=>{
       e.preventDefault();
       const email = $('#l_email').value.trim();
@@ -331,16 +353,10 @@
       resetTokens[email] = { token, createdAt: Date.now() };
       save(KEY_RESET, resetTokens);
       const subject = encodeURIComponent('Redefinição de senha - FILIAL ATCD');
-      const body = encodeURIComponent(`Olá ${u.nome},
-
-Recebemos uma solicitação de redefinição de senha.
-Token: ${token}
-
-(Demonstração: sem backend; apresente este token ao admin).`);
+      const body = encodeURIComponent(`Olá ${u.nome},\n\nRecebemos uma solicitação de redefinição de senha.\nToken: ${token}\n\n(Demonstração: sem backend; apresente este token ao admin).`);
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-      alert('Um e-mail foi preparado no seu cliente. Token salvo localmente para conferência (demo).');
+      alert('Um e-mail foi preparado no seu cliente. Token salvo localmente (demo).');
     });
-
     $('#btnLogin').addEventListener('click', ()=>{
       const email = $('#l_email').value.trim();
       const senha = $('#l_senha').value;
@@ -349,13 +365,10 @@ Token: ${token}
       setSession({ id:u.id, nome:u.nome, email:u.email, perfil:u.perfil });
       showLogin(false);
     });
-
     $('#btnLogout').addEventListener('click', logout);
-
-    // Mostrar login se não logado
     if(!session){ showLogin(true); } else { showLogin(false); }
 
-    // ===== Logo editável =====
+    // ===== Logo (UI local) =====
     const logoEl = $('#appLogo');
     const logoInput = $('#logoInput');
     if(savedLogo){ logoEl.src = savedLogo; }
@@ -365,33 +378,28 @@ Token: ${token}
       const dataUrl = await fileToDataURL(f);
       logoEl.src = dataUrl;
       localStorage.setItem(KEY_LOGO, dataUrl);
-      // reflete no login
       loginLogo.src = dataUrl; loginLogo.style.display='block';
       ev.target.value='';
     });
 
-    // ===== Corretoras: select não editável =====
-    function saveListaCorretoras(){ save(KEY_LISTA_CORRETORAS, listaCorretoras); }
+    // ===== Corretoras (UI) =====
     function renderCorretorasSelect(){
       const sel = document.getElementById('corretora');
       if(!sel) return;
       const cur = sel.value;
       sel.innerHTML = `<option value="" disabled ${cur? '' : 'selected'}>Selecione…</option>` +
-        (listaCorretoras||[])
-          .map(c => `<option value="${escapeHtml(c.nome)}">${escapeHtml(c.nome)} — ${escapeHtml(c.cnpj||'')}</option>`)
-          .join('');
+        _corretoras.map(c => `<option value="${escapeHtml(c.nome||'')}">${escapeHtml(c.nome||'')} — ${escapeHtml(c.cnpj||'')}</option>`).join('');
       if (cur && [...sel.options].some(o => o.value === cur)) sel.value = cur;
     }
 
-    // ===== Render / Board =====
+    // ===== Atendimentos (render do Kanban) =====
     const board = $('#board');
     function getVisibleItems(){
       const sess = getSession();
       if(!sess) return [];
-      if(sess.perfil === 'admin') return items;
-      return items.filter(it => it.ownerId===sess.id || (it.responsavel||'')===sess.nome);
+      if(sess.perfil === 'admin') return _atendimentos;
+      return _atendimentos.filter(it => it.owner_id===sess.id || (it.responsavel||'')===sess.nome);
     }
-
     function render(){
       board.innerHTML = '';
       const search = $('#search').value.trim().toLowerCase();
@@ -425,14 +433,13 @@ Token: ${token}
         const body = sec.querySelector('.col-body');
         body.addEventListener('dragover', ev=>{ ev.preventDefault(); body.classList.add('dropzone'); });
         body.addEventListener('dragleave', ()=> body.classList.remove('dropzone'));
-        body.addEventListener('drop', ev=>{
+        body.addEventListener('drop', async ev=>{
           ev.preventDefault();
           body.classList.remove('dropzone');
-          const id = ev.dataTransfer.getData('text/plain');
-          moveTo(id, col.key);
+          const id = Number(ev.dataTransfer.getData('text/plain'));
+          await moveTo(id, col.key);
         });
 
-        // Admin pode trocar cores
         if (isAdmin) {
           const chip = sec.querySelector('.color-chip');
           const inp = sec.querySelector('.color-input');
@@ -456,31 +463,27 @@ Token: ${token}
         filtered.forEach(it => body.appendChild(card(it)));
       });
 
-      // popular filtro de responsável (apenas visíveis)
       const responsaveis = ['', ...new Set(getVisibleItems().map(i=>i.responsavel).filter(Boolean))];
       const sel = $('#filterResponsavel');
       const cur = sel.value; sel.innerHTML = responsaveis.map(r=>`<option value="${r}">${r || 'Todos responsáveis'}</option>`).join(''); sel.value = cur;
 
-      // atualizar select de corretoras
       renderCorretorasSelect();
     }
-
     function matches(it, q){
-      const hay = `${it.corretora} ${it.contato||''} ${it.assunto} ${it.descricao} ${(it.tags||[]).join(' ')}`.toLowerCase();
+      const hay = `${it.corretora} ${it.contato||''} ${it.assunto} ${it.descricao} ${(Array.isArray(it.tags)?it.tags:[]).join(' ')}`.toLowerCase();
       return hay.includes(q);
     }
-
     function card(it){
       const el = document.createElement('article');
       el.className='card'; el.draggable=true; el.dataset.id = it.id;
-      el.addEventListener('dragstart', ev=>{ el.classList.add('dragging'); ev.dataTransfer.setData('text/plain', it.id) });
+      el.addEventListener('dragstart', ev=>{ el.classList.add('dragging'); ev.dataTransfer.setData('text/plain', String(it.id)) });
       el.addEventListener('dragend', ()=> el.classList.remove('dragging'));
       const prioClass = {Alta:'alta','Média':'média','Baixa':'baixa'}[it.prioridade||'Baixa'];
       const overdue = isOverdue(it);
       el.innerHTML = `
-        <h4 title="${it.assunto}">${escapeHtml(it.assunto)}</h4>
+        <h4 title="${it.assunto||''}">${escapeHtml(it.assunto||'')}</h4>
         <div class="meta">
-          <span class="tag">${escapeHtml(it.corretora)}</span>
+          <span class="tag">${escapeHtml(it.corretora||'')}</span>
           ${it.contato?`<span class="tag">Contato: ${escapeHtml(it.contato)}</span>`:''}
           ${it.responsavel?`<span class="tag">Resp.: ${escapeHtml(it.responsavel)}</span>`:''}
           <span class="tag prio ${prioClass}">Prio: ${it.prioridade||'Baixa'}</span>
@@ -488,52 +491,61 @@ Token: ${token}
           ${it.sla?`<span class="tag">SLA: ${it.sla}d</span>`:''}
           ${it.tags && it.tags.length?`<span class="tag">#${it.tags.slice(0,2).join(' #')}${it.tags.length>2?'…':''}</span>`:''}
         </div>
-        <p style="margin:8px 0 0 0;color:#374151;white-space:pre-line">${escapeHtml(shorten(it.descricao, 220))}</p>
+        <p style="margin:8px 0 0 0;color:#374151;white-space:pre-line">${escapeHtml(shorten(it.descricao||'', 220))}</p>
         <div class="actions">
           ${it.anexo?`<a class="btn" href="${it.anexo}" target="_blank" rel="noopener">Abrir anexo</a>`:''}
           <button data-act="ver">Abrir</button>
           <button data-act="avancar">Avançar</button>
         </div>`;
-      el.querySelectorAll('button').forEach(b=> b.addEventListener('click', (ev)=>{
-        const act = ev.currentTarget.dataset.act; if(act==='ver') openModal(it.id); if(act==='avancar') advance(it.id);
+      el.querySelectorAll('button').forEach(b=> b.addEventListener('click', async (ev)=>{
+        const act = ev.currentTarget.dataset.act; if(act==='ver') openModal(it.id); if(act==='avancar') await advance(it.id);
       }))
       return el;
     }
-
     function isOverdue(it){ if(!it.follow) return false; const d=new Date(it.follow); const t=new Date(); t.setHours(0,0,0,0); return d<t && it.status!=='concluido'; }
     function fmtDate(v){ try{ return new Date(v).toLocaleDateString('pt-BR') }catch{ return v } }
 
-    function moveTo(id,status){ const i=items.findIndex(x=>x.id===id); if(i<0) return; items[i].status=status; items[i].updatedAt=Date.now(); save(KEY, items); render(); }
-    function advance(id){ const order=['novo','andamento','aguardando','concluido']; const it=items.find(x=>x.id===id); if(!it) return; const idx=Math.min(order.indexOf(it.status)+1,order.length-1); it.status=order[idx]; it.updatedAt=Date.now(); save(KEY, items); render(); }
+    async function moveTo(id,status){
+      const i=_atendimentos.findIndex(x=>x.id===id); if(i<0) return;
+      const payload = { id, status };
+      await apiAtualizarAtendimento(payload);
+      _atendimentos[i] = { ..._atendimentos[i], status, updated_at: new Date().toISOString() };
+      render();
+    }
+    async function advance(id){
+      const order=['novo','andamento','aguardando','concluido'];
+      const it=_atendimentos.find(x=>x.id===id); if(!it) return;
+      const idx=Math.min(order.indexOf(it.status)+1,order.length-1);
+      await moveTo(id, order[idx]);
+    }
 
-    // ===== Modal CRUD Atendimentos =====
+    // ===== Modal CRUD Atendimentos (banco) =====
     const modal = $('#modal'); const form = $('#form');
-
     $('#btnAdd').addEventListener('click', ()=> openModal());
 
     function openModal(id){
       if(!getSession()){ showLogin(true); return; }
       const sess = getSession();
-      const editing = items.find(x=>x.id===id);
+      const editing = _atendimentos.find(x=>x.id===id);
       form.reset();
       form.querySelector('#id').value = editing? editing.id : '';
       $('#btnExcluir').style.display = editing? 'inline-block' : 'none';
       $('#btnDuplicar').style.display = editing? 'inline-block' : 'none';
 
-      // garantir opções de corretora atualizadas
       renderCorretorasSelect();
 
       if(editing){
         ['contato','assunto','descricao','proximo','follow','tags','sla','anexo'].forEach(k=>{
-          const el=form.querySelector('#'+k); if(!el) return; if(k==='tags') el.value=(editing.tags||[]).join(', '); else el.value=editing[k]??'';
+          const el=form.querySelector('#'+k); if(!el) return;
+          if(k==='tags') el.value=(Array.isArray(editing.tags)?editing.tags:[]).join(', ');
+          else el.value=editing[k]??'';
         })
         form.querySelector('#prioridade').value = editing.prioridade || 'Baixa';
         form.querySelector('#canal').value = editing.canal || 'WhatsApp';
         form.querySelector('#status').value = editing.status || 'novo';
 
-        // corretora: se não existir na lista, cria opção temporária
         const selCor = form.querySelector('#corretora');
-        if (editing.corretora && !listaCorretoras.some(c => c.nome === editing.corretora)) {
+        if (editing.corretora && !_corretoras.some(c => c.nome === editing.corretora)) {
           const opt = document.createElement('option');
           opt.value = editing.corretora;
           opt.textContent = editing.corretora + ' (não listada)';
@@ -541,7 +553,6 @@ Token: ${token}
         }
         selCor.value = editing.corretora || '';
 
-        // responsável: admin pode editar; comercial travado no próprio nome
         const resp = $('#responsavel');
         if(sess.perfil==='comercial'){ resp.value = sess.nome; resp.readOnly = true; }
         else { resp.value = editing.responsavel || ''; resp.readOnly = false; }
@@ -549,7 +560,6 @@ Token: ${token}
         form.querySelector('#status').value='novo';
         form.querySelector('#prioridade').value='Baixa';
         form.querySelector('#canal').value='WhatsApp';
-        // responsável automático
         const resp = $('#responsavel');
         resp.value = sess?.nome || '';
         resp.readOnly = (sess?.perfil==='comercial');
@@ -557,56 +567,54 @@ Token: ${token}
       modal.showModal();
     }
 
-    // Botão Cancelar fecha na hora
-    document.getElementById('btnCancelar')?.addEventListener('click', () => {
-      modal.close('cancel');
-    });
+    document.getElementById('btnCancelar')?.addEventListener('click', () => modal.close('cancel'));
 
-    // Ao confirmar, salva (comercial: força owner/responsável)
-    modal.addEventListener('close', ()=>{
+    modal.addEventListener('close', async ()=>{
       if(modal.returnValue==='confirm'){
         const data = formToObj();
         if(!data.corretora || !data.assunto || !data.descricao){ alert('Preencha Corretora, Assunto e Informações.'); return modal.showModal(); }
         const sess = getSession();
-        if(sess?.perfil==='comercial'){
-          data.responsavel = sess.nome;
-        }
-        const id = form.querySelector('#id').value;
-        if(id){
-          const i=items.findIndex(x=>x.id===id);
-          if(i>=0){
-            items[i] = { ...items[i], ...data, updatedAt: Date.now() };
-          }
+        if(sess?.perfil==='comercial'){ data.responsavel = sess.nome; }
+
+        const id = Number(form.querySelector('#id').value || '');
+        const payload = toDBPayload(data, { id, ownerId: sess?.id || null });
+
+        let res;
+        if(id){ res = await apiAtualizarAtendimento({ id, ...payload }); }
+        else { res = await apiInserirAtendimento(payload); }
+
+        if(res?.ok){
+          await loadAll();
+          render();
         } else {
-          items.unshift({
-            id: uid(),
-            ownerId: sess?.id || null,
-            createdAt: Date.now(),
-            updatedAt: Date.now(),
-            ...data
-          });
+          alert('Erro ao salvar atendimento: ' + (res?.error || ''));
         }
-        save(KEY, items);
-        render();
       }
     });
 
-    $('#btnExcluir').addEventListener('click', ()=>{
-      const id=form.querySelector('#id').value; if(!id) return;
+    document.getElementById('btnExcluir').addEventListener('click', async ()=>{
+      const id=Number(form.querySelector('#id').value||''); if(!id) return;
       if(confirm('Excluir este atendimento?')){
-        items=items.filter(x=>x.id!==id);
-        save(KEY, items);
-        modal.close('confirm');
-        render();
+        const res = await apiExcluirAtendimento(id);
+        if(res.ok){
+          await loadAll();
+          modal.close('confirm');
+          render();
+        }else{
+          alert('Erro: ' + (res.error||''));
+        }
       }
     });
 
-    $('#btnDuplicar').addEventListener('click', ()=>{
-      const id=form.querySelector('#id').value; if(!id) return;
-      const src=items.find(x=>x.id===id); if(!src) return;
+    document.getElementById('btnDuplicar').addEventListener('click', async ()=>{
+      const id=Number(form.querySelector('#id').value||''); if(!id) return;
+      const src=_atendimentos.find(x=>x.id===id); if(!src) return;
       const sess = getSession();
-      const copy={...src,id:uid(),ownerId:sess?.id||src.ownerId,assunto:src.assunto+' (cópia)',createdAt:Date.now(),updatedAt:Date.now()};
-      items.unshift(copy); save(KEY, items); render(); modal.close('cancel');
+      const copy = { ...src, id: undefined, assunto: (src.assunto||'') + ' (cópia)', owner_id: sess?.id || src.owner_id, created_at: undefined, updated_at: undefined };
+      const payload = toDBPayload(copy, { id: undefined, ownerId: sess?.id || null });
+      const res = await apiInserirAtendimento(payload);
+      if(res.ok){ await loadAll(); render(); modal.close('cancel'); }
+      else alert('Erro: ' + (res.error||''));
     });
 
     function formToObj(){
@@ -628,50 +636,69 @@ Token: ${token}
         anexo:get('anexo')
       };
     }
+    function toDBPayload(d, { id, ownerId }){
+      return {
+        id: id || undefined,
+        owner_id: ownerId ?? null,
+        status: d.status,
+        prioridade: d.prioridade,
+        corretora: d.corretora,
+        contato: d.contato || null,
+        canal: d.canal || 'WhatsApp',
+        assunto: d.assunto,
+        responsavel: d.responsavel || null,
+        descricao: d.descricao,
+        proximo: d.proximo || null,
+        follow: d.follow || null,
+        sla: d.sla? Number(d.sla) : null,
+        tags: Array.isArray(d.tags)? d.tags : [],
+        anexo: d.anexo || null
+      };
+    }
 
-    // ===== Busca & Filtros =====
-    $('#search').addEventListener('input', render);
-    $('#filterPrioridade').addEventListener('change', render);
-    $('#filterResponsavel').addEventListener('change', render);
-
-    // ===== Import/Export (cards) =====
+    // ===== Export/Import (apenas utilitário – agora exporta do array em memória) =====
     $('#btnExport').addEventListener('click', ()=>{
-      const blob=new Blob([JSON.stringify(items,null,2)],{type:'application/json'});
+      const blob=new Blob([JSON.stringify(_atendimentos,null,2)],{type:'application/json'});
       const url=URL.createObjectURL(blob);
       const a=Object.assign(document.createElement('a'),{href:url,download:'kanban_corretoras.json'}); a.click();
       URL.revokeObjectURL(url);
     });
     $('#btnExportCSV').addEventListener('click', ()=>{
-      const csv=toCSV(items);
+      const csv=toCSV(_atendimentos);
       const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
       const url=URL.createObjectURL(blob);
       const a=Object.assign(document.createElement('a'),{href:url,download:'kanban_corretoras.csv'}); a.click();
       URL.revokeObjectURL(url);
     });
-
     function toCSV(rows){
-      const cols=['id','ownerId','createdAt','updatedAt','status','prioridade','corretora','contato','canal','assunto','responsavel','descricao','proximo','follow','sla','tags','anexo'];
+      const cols=['id','owner_id','created_at','updated_at','status','prioridade','corretora','contato','canal','assunto','responsavel','descricao','proximo','follow','sla','tags','anexo'];
       const head=cols.join(',');
       const body=rows.map(r=> cols.map(c=> csvCell(c==='tags'?(r[c]||[]).join('|'):r[c])).join(',')).join('\n');
       return head+'\n'+body;
     }
     function csvCell(v){ if(v==null) return ''; const s=String(v).replaceAll('"','""'); if(/[",\n]/.test(s)) return '"'+s+'"'; return s; }
-
     $('#importFile').addEventListener('change', async ev=>{
       const file=ev.target.files[0]; if(!file) return; const text=await file.text();
       try{
         const data=JSON.parse(text); if(!Array.isArray(data)) throw new Error('Formato inválido');
-        items=data; save(KEY, items); render();
+        // importa 1 a 1 para o banco
+        for (const row of data) {
+          const payload = toDBPayload({
+            ...row,
+            tags: row.tags ? (Array.isArray(row.tags) ? row.tags : String(row.tags).split('|').map(s=>s.trim()).filter(Boolean)) : []
+          }, { id: undefined, ownerId: getSession()?.id || null });
+          await apiInserirAtendimento(payload);
+        }
+        await loadAll(); render();
+        alert('Importado para o banco com sucesso.');
       }catch(e){ alert('Arquivo JSON inválido.'); }
       ev.target.value='';
     });
 
-    // ===== Corretoras: Modal + CRUD =====
+    // ===== Corretoras: Modal + CRUD (banco) =====
     const modalCorretoras = document.getElementById('modalCorretoras');
     const formCorretora  = document.getElementById('formCorretora');
     const tbodyCorretoras = document.getElementById('tbodyCorretoras');
-
-    // Badge abre modal de Corretoras
     document.getElementById('badgeCorretoras').addEventListener('click', openCorretorasModal);
 
     function openCorretorasModal(){
@@ -679,12 +706,10 @@ Token: ${token}
       document.getElementById('hintPerfilCorretoras').textContent = isAdmin
         ? 'Você pode incluir, editar, excluir e importar.'
         : 'Visualização somente. Para alterar, acesse com um usuário administrador.';
-
       document.getElementById('btnNovaCorretora').style.display   = isAdmin ? 'inline-block':'none';
       document.getElementById('btnImportCorretoras').style.display = isAdmin ? 'inline-block':'none';
-
       formCorretora.reset();
-      document.getElementById('c_idx').value = '';
+      document.getElementById('c_id').value = '';
       renderCorretorasTable();
       modalCorretoras.showModal();
     }
@@ -692,89 +717,61 @@ Token: ${token}
     function renderCorretorasTable(){
       const q = (document.getElementById('buscaCorretora').value || '').toLowerCase().trim();
       const isAdmin = getSession()?.perfil === 'admin';
-      const base = (listaCorretoras || []);
-      const rows = base
-        .map((c, idx) => ({...c, _idx: idx}))
-        .filter(c => !q || ( (c.nome||'').toLowerCase().includes(q) || (c.cnpj||'').toLowerCase().includes(q) ));
-
+      const rows = _corretoras.filter(c => !q || ((c.nome||'').toLowerCase().includes(q) || (c.cnpj||'').toLowerCase().includes(q)));
       tbodyCorretoras.innerHTML = rows.map(r => `
         <tr>
           <td style="padding:10px;border-bottom:1px solid #f1f5f9">${escapeHtml(r.nome||'')}</td>
           <td style="padding:10px;border-bottom:1px solid #f1f5f9">${escapeHtml(r.cnpj||'')}</td>
           <td style="padding:10px;border-bottom:1px solid #f1f5f9;text-align:right">
-            <button type="button" class="btnEdit" data-idx="${r._idx}" ${isAdmin?'':'disabled'}>Editar</button>
-            <button type="button" class="btnDel"  data-idx="${r._idx}" ${isAdmin?'':'disabled'}>Excluir</button>
+            <button type="button" class="btnEdit" data-id="${r.id}" ${isAdmin?'':'disabled'}>Editar</button>
+            <button type="button" class="btnDel"  data-id="${r.id}" ${isAdmin?'':'disabled'}>Excluir</button>
           </td>
         </tr>
       `).join('');
 
       tbodyCorretoras.querySelectorAll('.btnEdit').forEach(b=>{
         b.addEventListener('click', ()=>{
-          const idx = +b.dataset.idx;
-          const row = listaCorretoras[idx]; if(!row) return;
-          document.getElementById('c_idx').value = String(idx);
+          const id = Number(b.dataset.id);
+          const row = _corretoras.find(x=>x.id===id); if(!row) return;
+          document.getElementById('c_id').value = String(row.id);
           document.getElementById('c_nome').value = row.nome || '';
           document.getElementById('c_cnpj').value = row.cnpj || '';
         });
       });
       tbodyCorretoras.querySelectorAll('.btnDel').forEach(b=>{
-        b.addEventListener('click', ()=>{
-          const idx = +b.dataset.idx;
-          if(confirm('Excluir esta corretora?')){
-            listaCorretoras.splice(idx,1);
-            saveListaCorretoras();
-            renderCorretorasTable();
-            renderCorretorasSelect();
-          }
+        b.addEventListener('click', async ()=>{
+          const id = Number(b.dataset.id);
+          if(!confirm('Excluir esta corretora?')) return;
+          const r = await apiExcluirCorretora(id);
+          if (r.ok) { await loadCorretoras(); alert('Excluída.'); }
+          else alert('Erro ao excluir: ' + (r.error||'')); 
         });
       });
     }
 
     document.getElementById('buscaCorretora').addEventListener('input', renderCorretorasTable);
-
     document.getElementById('btnNovaCorretora').addEventListener('click', ()=>{
-      formCorretora.reset();
-      document.getElementById('c_idx').value = '';
-      document.getElementById('c_nome').focus();
+      formCorretora.reset(); document.getElementById('c_id').value = ''; document.getElementById('c_nome').focus();
     });
-
     document.getElementById('btnImportCorretoras').addEventListener('click', ()=>{
       if(getSession()?.perfil!=='admin'){ alert('Somente administrador pode importar.'); return; }
       document.getElementById('importCorretoras').click();
     });
+    document.getElementById('btnFecharCorretoras').addEventListener('click', ()=> modalCorretoras.close('cancel'));
 
-    document.getElementById('btnFecharCorretoras').addEventListener('click', ()=>{
-      modalCorretoras.close('cancel');
-    });
-
-    document.getElementById('btnSalvarCorretora').addEventListener('click', (e)=>{
+    document.getElementById('btnSalvarCorretora').addEventListener('click', async (e)=>{
       e.preventDefault();
       if(getSession()?.perfil!=='admin'){ alert('Somente administrador pode salvar.'); return; }
-
-      const idx  = document.getElementById('c_idx').value;
+      const id  = Number(document.getElementById('c_id').value || '');
       const nome = (document.getElementById('c_nome').value || '').trim();
       const cnpj = (document.getElementById('c_cnpj').value || '').trim();
-
       if(!nome){ alert('Informe o nome.'); return; }
-
-      const rec = { nome, cnpj };
-
-      if(idx){
-        const i = +idx;
-        if(!listaCorretoras[i]){ alert('Registro não encontrado.'); return; }
-        listaCorretoras[i] = rec;
-      }else{
-        listaCorretoras.push(rec);
-      }
-
-      saveListaCorretoras();
-      renderCorretorasTable();
-      renderCorretorasSelect();
-      formCorretora.reset();
-      document.getElementById('c_idx').value = '';
+      const payload = { nome, cnpj };
+      const res = id ? await apiAtualizarCorretora({ id, ...payload }) : await apiInserirCorretora(payload);
+      if(res.ok){ await loadCorretoras(); formCorretora.reset(); document.getElementById('c_id').value=''; alert('Corretora salva no banco.'); }
+      else alert('Erro: ' + (res.error || 'Falha ao salvar'));
     });
 
-    // ===== Importar LISTA DE CORRETORAS =====
     document.getElementById('importCorretoras').addEventListener('change', async ev=>{
       const file = ev.target.files[0]; if(!file) return;
       const text = await file.text();
@@ -782,11 +779,14 @@ Token: ${token}
         let data;
         try{ data = JSON.parse(text); }catch{ data = parseCSVCorretoras(text); }
         if(!Array.isArray(data)) throw new Error('Estrutura inválida');
-        listaCorretoras = data.map(r=>({nome:(r.nome||r.Nome||'').trim(), cnpj:(r.cnpj||r.CNPJ||'').trim()})).filter(r=>r.nome);
-        saveListaCorretoras();
-        renderCorretorasSelect();
-        if (typeof renderCorretorasTable === 'function') renderCorretorasTable();
-        alert('Lista de corretoras importada com sucesso.');
+        for (const r of data) {
+          const nome = String((r.nome||r.Nome||'').trim());
+          const cnpj = String((r.cnpj||r.CNPJ||'').trim());
+          if (!nome) continue;
+          await apiInserirCorretora({ nome, cnpj });
+        }
+        await loadCorretoras();
+        alert('Lista importada para o banco com sucesso.');
       }catch(e){
         alert('Arquivo inválido. Use CSV com cabeçalho nome,cnpj ou JSON [{"nome":"...", "cnpj":"..."}].');
       }
@@ -817,18 +817,7 @@ Token: ${token}
       return out;
     }
 
-    // ===== Exemplos & Reset =====
-    $('#btnExemplo').addEventListener('click', ()=>{ if(!confirm('Preencher com exemplos? Isso substitui os itens atuais.')) return; items=demo(); save(KEY, items); render(); })
-    $('#btnZerar').addEventListener('click', ()=>{ if(confirm('Limpar todo o quadro?')){ items=[]; save(KEY, items); render(); } })
-
-    function demo(){ const now=Date.now(); return [
-      {id:uid(),ownerId:session?.id||null,createdAt:now-86400000*3,updatedAt:now-86400000*2,status:'novo',prioridade:'Alta',corretora:'MV Corretora',contato:'Ana',canal:'WhatsApp',assunto:'Taxa Instalação GO (o) – dúvidas',responsavel:session?.nome||'Riserio',descricao:'Solicitou esclarecimentos sobre o produto ID 6008. Enviar tabela atualizada e instruções de vinculação no ADM 128.',proximo:'Enviar tabela',follow:new Date(now+86400000).toISOString().slice(0,10),sla:2,tags:['produto','adm128'],anexo:''},
-      {id:uid(),ownerId:session?.id||null,createdAt:now-86400000*5,updatedAt:now-86400000*1,status:'andamento',prioridade:'Média',corretora:'MR Assessoria',contato:'Bruno',canal:'E-mail',assunto:'Erro na cotação – quotation service',responsavel:'Jane',descricao:'Cliente reporta mensagem "There is an error on quotation service" durante multicílculo. Reproduzir e coletar logs.',proximo:'Coletar evidências',follow:new Date(now+86400000*2).toISOString().slice(0,10),sla:3,tags:['agger','hml'],anexo:''},
-      {id:uid(),ownerId:session?.id||null,createdAt:now-86400000*6,updatedAt:now-86400000*3,status:'aguardando',prioridade:'Baixa',corretora:'United Brokers',contato:'Carlos',canal:'Telefone',assunto:'Acesso à plataforma comercial',responsavel:'Marcus',descricao:'Solicitou criação de usuários comerciais e masters. Aguardando documentos.',proximo:'Aguardar docs',follow:new Date(now-86400000*1).toISOString().slice(0,10),sla:5,tags:['plataforma','acesso'],anexo:''},
-      {id:uid(),ownerId:session?.id||null,createdAt:now-86400000*9,updatedAt:now-86400000*1,status:'concluido',prioridade:'Baixa',corretora:'Gama Assessoria',contato:'Paula',canal:'Reunião',assunto:'Vinculação de produto 5155 e 6008',responsavel:'Raphael',descricao:'Incluído produto 6008 nas tabelas com valor R$ 20,00 conforme regra; vinculação por representante será feita pelo usuário.',proximo:'',follow:'',sla:0,tags:['tabela','regra'],anexo:''},
-    ]; }
-
-    // ===== Usuários (CRUD completo) =====
+    // ===== Usuários (continua local por enquanto) =====
     const modalUsers = $('#modalUsers');
     const formUser = $('#formUser');
     $('#btnUsers').addEventListener('click', ()=>{
@@ -839,13 +828,7 @@ Token: ${token}
       modalUsers.showModal();
     });
     $('#btnFecharUsers').addEventListener('click', ()=> modalUsers.close('cancel'));
-
-    $('#btnNovoUser').addEventListener('click', ()=>{
-      formUser.reset();
-      $('#u_id').value = '';
-      $('#u_nome').focus();
-    });
-
+    $('#btnNovoUser').addEventListener('click', ()=>{ formUser.reset(); $('#u_id').value=''; $('#u_nome').focus(); });
     $('#btnSalvarUser').addEventListener('click', (e)=>{
       e.preventDefault();
       const id = $('#u_id').value.trim();
@@ -854,7 +837,6 @@ Token: ${token}
       const senha = $('#u_senha').value;
       const perfil = $('#u_perfil').value;
       if(!nome || !email || !senha) { alert('Preencha nome, e-mail e senha'); return; }
-
       if(id){
         const i = users.findIndex(u=>u.id===id);
         if(i<0){ alert('Usuário não encontrado.'); return; }
@@ -866,9 +848,8 @@ Token: ${token}
       }
       save(KEY_USERS, users);
       renderUserList();
-      alert('Usuário salvo.');
+      alert('Usuário salvo (armazenamento local).');
     });
-
     function renderUserList(){
       const box = $('#userList');
       box.innerHTML = users.map(u=>`
@@ -880,7 +861,6 @@ Token: ${token}
           </span>
         </div>
       `).join('');
-
       box.querySelectorAll('.btnEditUser').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           const id = btn.getAttribute('data-id');
@@ -893,7 +873,6 @@ Token: ${token}
           $('#u_perfil').value = u.perfil;
         });
       });
-
       box.querySelectorAll('.btnDelUser').forEach(btn=>{
         btn.addEventListener('click', ()=>{
           const id = btn.getAttribute('data-id');
@@ -912,10 +891,74 @@ Token: ${token}
     function shorten(str='',n=160){ return str.length>n? str.slice(0,n-1)+'…' : str }
     function fileToDataURL(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }); }
 
-    // ===== Inicialização =====
-    if(!Array.isArray(items) || items.length===0){ items = demo(); save(KEY, items); }
-    applySessionUI();
-    render();
+    // ===== Carregamento inicial (banco) =====
+    async function loadCorretoras(){
+      const res = await apiListarCorretoras();
+      if (res.ok) { _corretoras = res.rows || []; renderCorretorasSelect(); if (typeof renderCorretorasTable==='function') renderCorretorasTable(); }
+      else console.error('Falha corretoras', res.error);
+    }
+    async function loadAtendimentos(){
+      const res = await apiListarAtendimentos();
+      if (res.ok) { _atendimentos = (res.rows||[]).map(normalizeAt); }
+      else console.error('Falha atendimentos', res.error);
+    }
+    async function loadAll(){ await Promise.all([loadCorretoras(), loadAtendimentos()]); }
+
+    function normalizeAt(r){
+      // garante campos esperados no front
+      return {
+        id: r.id,
+        owner_id: r.owner_id ?? null,
+        created_at: r.created_at,
+        updated_at: r.updated_at,
+        status: r.status || 'novo',
+        prioridade: r.prioridade || 'Baixa',
+        corretora: r.corretora || '',
+        contato: r.contato || '',
+        canal: r.canal || 'WhatsApp',
+        assunto: r.assunto || '',
+        responsavel: r.responsavel || '',
+        descricao: r.descricao || '',
+        proximo: r.proximo || '',
+        follow: r.follow || '',
+        sla: r.sla ?? null,
+        tags: Array.isArray(r.tags) ? r.tags : (r.tags ? String(r.tags).split('|').map(s=>s.trim()).filter(Boolean) : []),
+        anexo: r.anexo || ''
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const savedLogo = localStorage.getItem(KEY_LOGO);
+      if(savedLogo){ $('#appLogo').src = savedLogo; }
+      await loadAll();
+      applySessionUI();
+      render();
+      // utilitários demo
+      $('#btnExemplo').addEventListener('click', async ()=>{
+        if(!confirm('Preencher com exemplos no banco?')) return;
+        const sess = getSession();
+        const examples = demo(sess?.id, sess?.nome);
+        for (const it of examples) { await apiInserirAtendimento(toDBPayload(it, { id: undefined, ownerId: sess?.id||null })); }
+        await loadAtendimentos(); render();
+      });
+      $('#btnZerar').addEventListener('click', async ()=>{
+        if(!confirm('Apagar TODOS os atendimentos do quadro? Isso removerá do banco.')) return;
+        // deleta um a um (seguro)
+        for(const it of _atendimentos){ await apiExcluirAtendimento(it.id); }
+        await loadAtendimentos(); render();
+      });
+    });
+
+    function demo(ownerId, respNome){
+      const now = new Date();
+      const d = (days)=> new Date(Date.now()+days*86400000).toISOString().slice(0,10);
+      return [
+        { owner_id: ownerId||null, status:'novo', prioridade:'Alta',   corretora:'MV Corretora',   contato:'Ana',   canal:'WhatsApp', assunto:'Taxa Instalação GO (o) – dúvidas',  responsavel:respNome||'Riserio', descricao:'Solicitou esclarecimentos sobre o produto ID 6008. Enviar tabela atualizada e instruções de vinculação no ADM 128.', proximo:'Enviar tabela', follow:d(1),  sla:2, tags:['produto','adm128'], anexo:'' },
+        { owner_id: ownerId||null, status:'andamento', prioridade:'Média', corretora:'MR Assessoria', contato:'Bruno', canal:'E-mail',   assunto:'Erro na cotação – quotation service', responsavel:'Jane',          descricao:'Cliente reporta mensagem "There is an error on quotation service" durante multicílculo. Reproduzir e coletar logs.',            proximo:'Coletar evidências', follow:d(2),  sla:3, tags:['agger','hml'], anexo:'' },
+        { owner_id: ownerId||null, status:'aguardando', prioridade:'Baixa', corretora:'United Brokers', contato:'Carlos', canal:'Telefone', assunto:'Acesso à plataforma comercial',     responsavel:'Marcus',        descricao:'Solicitou criação de usuários comerciais e masters. Aguardando documentos.',                                               proximo:'Aguardar docs',      follow:d(-1), sla:5, tags:['plataforma','acesso'], anexo:'' },
+        { owner_id: ownerId||null, status:'concluido',  prioridade:'Baixa', corretora:'Gama Assessoria', contato:'Paula',  canal:'Reunião', assunto:'Vinculação de produto 5155 e 6008', responsavel:'Raphael',       descricao:'Incluído produto 6008 nas tabelas com valor R$ 20,00 conforme regra; vinculação por representante será feita pelo usuário.', proximo:'', follow:'', sla:0, tags:['tabela','regra'], anexo:'' },
+      ];
+    }
   </script>
 </body>
 </html>
