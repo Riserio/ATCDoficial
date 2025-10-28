@@ -1,0 +1,16 @@
+{
+  "name": "atcdoficial-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Netlify Functions backend for Neon PostgreSQL",
+  "main": "index.js",
+  "license": "UNLICENSED",
+  "scripts": {
+    "postinstall": "echo Using Netlify Functions with pg",
+    "build": "echo No build step for static frontend",
+    "start": "echo Use Netlify dev to emulate functions"
+  },
+  "dependencies": {
+    "pg": "^8.11.5"
+  }
+}
