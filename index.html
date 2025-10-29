@@ -21,7 +21,7 @@
     .left,.right{display:flex;gap:8px;align-items:center}
     h1{font-size:18px;margin:0;display:flex;gap:10px;align-items:center}
     .badge{background:var(--brand);color:#fff;border-radius:999px;padding:6px 10px;font-weight:600;cursor:pointer}
-    .logo{height:28px;width:auto;cursor:pointer} /* logo pequena e clicável */
+    .logo{height:28px;width:auto;cursor:pointer}
     input[type=search],select,button,.btn{border:1px solid #d1d5db;background:#fff;border-radius:12px;padding:10px 12px}
     input[type=search]{min-width:280px}
     button.primary{background:var(--brand);color:#fff;border-color:transparent;box-shadow:var(--shadow)}
@@ -50,13 +50,11 @@
 
     .dropzone{border:2px dashed #dbeafe;border-radius:12px;padding:10px;text-align:center;color:#6b7280}
 
-    /* Cor da coluna: só quadrinho; clicável apenas para admin */
     .color-wrap{display:flex;align-items:center;gap:8px}
     .color-chip{width:18px;height:18px;border-radius:6px;border:1px solid #cbd5e1;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
     .color-chip.clickable{cursor:pointer}
     .color-input{appearance:none;width:0;height:0;border:0;padding:0}
 
-    /* Modal */
     dialog{border:none;border-radius:16px;box-shadow:var(--shadow);width:min(920px,92vw)}
     form.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
     .field{display:flex;flex-direction:column;gap:6px}
@@ -71,7 +69,6 @@
     @media (max-width:1100px){.columns{grid-template-columns:repeat(2,minmax(260px,1fr));}}
     @media (max-width:640px){.columns{grid-template-columns:1fr} input[type=search]{min-width:unset;width:100%}}
 
-    /* Login overlay */
     .login-wrap{position:fixed;inset:0;background:linear-gradient(180deg,#eef2ff,#ffffff);display:none;place-items:center;z-index:50}
     .login-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:var(--shadow);width:min(420px,92vw);padding:18px;display:flex;flex-direction:column;gap:12px}
     .login-card h2{margin:0 0 4px 0}
@@ -81,11 +78,9 @@
     .eye-btn{position:absolute;right:10px;top:50%;transform:translateY(-50%);border:none;background:transparent;cursor:pointer;padding:4px}
     .eye{width:18px;height:18px;display:inline-block}
 
-    /* Usuários (admin) */
     .user-list{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:200px;overflow:auto;border:1px solid #eef2ff;padding:8px;border-radius:10px}
     .user-item{display:flex;justify-content:space-between;gap:8px}
 
-    /* Tabela do modal Corretoras (agora sem scroll, tudo visível) */
     #tblCorretoras button[disabled]{opacity:.5; cursor:not-allowed}
   </style>
 </head>
@@ -93,7 +88,6 @@
   <header>
     <div class="bar">
       <div class="left">
-        <!-- Logo: troca via upload ao clicar -->
         <img id="appLogo" src="https://s3.amazonaws.com/bboneapp/Upload/logo/118/1693835269065_capturadetela2023-09-04as10.46.05.png" alt="BP" class="logo" title="Clique para alterar a logo" />
         <input id="logoInput" type="file" accept="image/*" style="display:none" />
         <h1>FILIAL ATCD <span id="badgeCorretoras" class="badge" title="Clique para gerenciar a lista de corretoras (CSV/JSON + CRUD)">Corretoras</span></h1>
@@ -115,7 +109,6 @@
         <button id="btnExportCSV">Exportar CSV</button>
         <label class="btn" for="importFile" style="cursor:pointer">Importar JSON</label>
         <input id="importFile" type="file" accept="application/json" style="display:none" />
-        <!-- visível só para admin -->
         <button id="btnUsers" style="display:none">Usuários</button>
         <button id="btnLogout">Sair</button>
       </div>
@@ -138,7 +131,6 @@
     <form id="form" method="dialog" class="grid">
       <h3 class="span-12" style="margin:0 0 6px 0">Cadastro de Atendimento</h3>
       <input type="hidden" id="id" />
-      <!-- Corretora agora é SELECT (não editável) -->
       <div class="field span-6">
         <label for="corretora">Corretora *</label>
         <select id="corretora" required>
@@ -166,7 +158,7 @@
     </form>
   </dialog>
 
-  <!-- Modal de Usuários (CRUD completo, apenas admin) -->
+  <!-- Modal de Usuários -->
   <dialog id="modalUsers">
     <form id="formUser" method="dialog" class="grid">
       <h3 class="span-12" style="margin:0 0 6px 0">Gerenciar Usuários</h3>
@@ -203,7 +195,6 @@
         <small class="muted" id="hintPerfilCorretoras"></small>
       </div>
 
-      <!-- sem scroll: removidos overflow/max-height -->
       <div class="span-12" style="border:1px solid #eef2ff;border-radius:12px">
         <table id="tblCorretoras" style="width:100%;border-collapse:collapse">
           <thead>
@@ -248,7 +239,7 @@
         <a href="#" id="lnkForgot" class="muted">Esqueci a senha</a>
         <button id="btnLogin" class="primary" type="button">Entrar</button>
       </div>
-      <p class="muted">Dica (demo): admin@bp / admin · vendedor@bp / 123</p>
+      <p class="muted">Dica (demo): <strong>admin / admin</strong> · admin@bp / admin · vendedor@bp / 123</p>
     </div>
   </div>
 
@@ -282,9 +273,10 @@
     let session = load(KEY_SESSION, null);
     let resetTokens = load(KEY_RESET, {});
 
-    // Seed demo users se vazio
+    // Seed demo users se vazio (inclui admin/admin)
     if(!Array.isArray(users) || users.length===0){
       users = [
+        { id: uid(), nome:'Administrador', email:'admin', senha:'admin', perfil:'admin' },
         { id: uid(), nome:'Administrador', email:'admin@bp', senha:'admin', perfil:'admin' },
         { id: uid(), nome:'Vendedor', email:'vendedor@bp', senha:'123', perfil:'comercial' },
       ];
@@ -304,9 +296,7 @@
 
     function applySessionUI(){
       const isAdmin = session?.perfil==='admin';
-      // botão de usuários só para admin
       $('#btnUsers').style.display = isAdmin? 'inline-block':'none';
-      // responsável automático (placeholder)
       const resp = $('#responsavel');
       if(resp){
         resp.value = session?.nome || '';
@@ -320,7 +310,7 @@
       inp.type = (inp.type === 'password') ? 'text' : 'password';
     });
 
-    // Esqueci a senha
+    // Esqueci a senha (demo)
     $('#lnkForgot').addEventListener('click', (e)=>{
       e.preventDefault();
       const email = $('#l_email').value.trim();
@@ -376,10 +366,15 @@ Token: ${token}
       const sel = document.getElementById('corretora');
       if(!sel) return;
       const cur = sel.value;
-      sel.innerHTML = `<option value="" disabled ${cur? '' : 'selected'}>Selecione…</option>` +
-        (listaCorretoras||[])
-          .map(c => `<option value="${escapeHtml(c.nome)}">${escapeHtml(c.nome)} — ${escapeHtml(c.cnpj||'')}</option>`)
-          .join('');
+      const head = `<option value="" disabled ${cur ? '' : 'selected'}>Selecione…</option>`;
+      const opts = (listaCorretoras||[])
+        .map(c => {
+          const nome = escapeHtml(c.nome || '');
+          const cnpj = escapeHtml(c.cnpj || '');
+          return `<option value="${nome}">${nome}${cnpj ? ' — ' + cnpj : ''}</option>`;
+        })
+        .join('');
+      sel.innerHTML = head + opts;
       if (cur && [...sel.options].some(o => o.value === cur)) sel.value = cur;
     }
 
@@ -394,7 +389,7 @@ Token: ${token}
 
     function render(){
       board.innerHTML = '';
-      const search = $('#search').value.trim().toLowerCase();
+      const search = ($('#search').value || '').trim().toLowerCase();
       const fPrio = $('#filterPrioridade').value;
       const fResp = $('#filterResponsavel').value;
 
@@ -466,7 +461,8 @@ Token: ${token}
     }
 
     function matches(it, q){
-      const hay = `${it.corretora} ${it.contato||''} ${it.assunto} ${it.descricao} ${(it.tags||[]).join(' ')}`.toLowerCase();
+      const tags = Array.isArray(it.tags) ? it.tags.join(' ') : '';
+      const hay = `${it.corretora||''} ${it.contato||''} ${it.assunto||''} ${it.descricao||''} ${tags}`.toLowerCase();
       return hay.includes(q);
     }
 
@@ -477,20 +473,31 @@ Token: ${token}
       el.addEventListener('dragend', ()=> el.classList.remove('dragging'));
       const prioClass = {Alta:'alta','Média':'média','Baixa':'baixa'}[it.prioridade||'Baixa'];
       const overdue = isOverdue(it);
+
+      const tagsView = (Array.isArray(it.tags) && it.tags.length)
+        ? `<span class="tag">#${it.tags.slice(0,2).join(' #')}${it.tags.length>2?'…':''}</span>` : '';
+
+      const contatoView = it.contato ? `<span class="tag">Contato: ${escapeHtml(it.contato)}</span>` : '';
+      const respView    = it.responsavel ? `<span class="tag">Resp.: ${escapeHtml(it.responsavel)}</span>` : '';
+      const followView  = it.follow
+        ? `<span class="tag ${overdue?'prio alta':''}">Follow: ${fmtDate(it.follow)}${overdue?' (atrasado)':''}</span>` : '';
+      const slaView     = it.sla ? `<span class="tag">SLA: ${it.sla}d</span>` : '';
+      const anexoView   = it.anexo ? `<a class="btn" href="${it.anexo}" target="_blank" rel="noopener">Abrir anexo</a>` : '';
+
       el.innerHTML = `
-        <h4 title="${it.assunto}">${escapeHtml(it.assunto)}</h4>
+        <h4 title="${escapeHtml(it.assunto||'')}">${escapeHtml(it.assunto||'')}</h4>
         <div class="meta">
-          <span class="tag">${escapeHtml(it.corretora)}</span>
-          ${it.contato?`<span class="tag">Contato: ${escapeHtml(it.contato)}</span>`:''}
-          ${it.responsavel?`<span class="tag">Resp.: ${escapeHtml(it.responsavel)}</span>`:''}
+          <span class="tag">${escapeHtml(it.corretora||'')}</span>
+          ${contatoView}
+          ${respView}
           <span class="tag prio ${prioClass}">Prio: ${it.prioridade||'Baixa'}</span>
-          ${it.follow?`<span class="tag ${overdue?'prio alta':''}">Follow: ${fmtDate(it.follow)}${overdue?' (atrasado)':''}</span>`:''}
-          ${it.sla?`<span class="tag">SLA: ${it.sla}d</span>`:''}
-          ${it.tags && it.tags.length?`<span class="tag">#${it.tags.slice(0,2).join(' #')}${it.tags.length>2?'…':''}</span>`:''}
+          ${followView}
+          ${slaView}
+          ${tagsView}
         </div>
-        <p style="margin:8px 0 0 0;color:#374151;white-space:pre-line">${escapeHtml(shorten(it.descricao, 220))}</p>
+        <p style="margin:8px 0 0 0;color:#374151;white-space:pre-line">${escapeHtml(shorten(it.descricao||'', 220))}</p>
         <div class="actions">
-          ${it.anexo?`<a class="btn" href="${it.anexo}" target="_blank" rel="noopener">Abrir anexo</a>`:''}
+          ${anexoView}
           <button data-act="ver">Abrir</button>
           <button data-act="avancar">Avançar</button>
         </div>`;
@@ -508,7 +515,6 @@ Token: ${token}
 
     // ===== Modal CRUD Atendimentos =====
     const modal = $('#modal'); const form = $('#form');
-
     $('#btnAdd').addEventListener('click', ()=> openModal());
 
     function openModal(id){
@@ -591,7 +597,7 @@ Token: ${token}
       }
     });
 
-    $('#btnExcluir').addEventListener('click', ()=>{
+    document.getElementById('btnExcluir').addEventListener('click', ()=>{
       const id=form.querySelector('#id').value; if(!id) return;
       if(confirm('Excluir este atendimento?')){
         items=items.filter(x=>x.id!==id);
@@ -601,7 +607,7 @@ Token: ${token}
       }
     });
 
-    $('#btnDuplicar').addEventListener('click', ()=>{
+    document.getElementById('btnDuplicar').addEventListener('click', ()=>{
       const id=form.querySelector('#id').value; if(!id) return;
       const src=items.find(x=>x.id===id); if(!src) return;
       const sess = getSession();
@@ -657,7 +663,7 @@ Token: ${token}
     }
     function csvCell(v){ if(v==null) return ''; const s=String(v).replaceAll('"','""'); if(/[",\n]/.test(s)) return '"'+s+'"'; return s; }
 
-    $('#importFile').addEventListener('change', async ev=>{
+    document.getElementById('importFile').addEventListener('change', async ev=>{
       const file=ev.target.files[0]; if(!file) return; const text=await file.text();
       try{
         const data=JSON.parse(text); if(!Array.isArray(data)) throw new Error('Formato inválido');
@@ -747,7 +753,7 @@ Token: ${token}
       modalCorretoras.close('cancel');
     });
 
-    document.getElementById('btnSalvarCorretora').addEventListener('click', (e)=>{
+    document.getElementById('btnSalvarCorretora').addEventListener('click', async (e)=>{
       e.preventDefault();
       if(getSession()?.perfil!=='admin'){ alert('Somente administrador pode salvar.'); return; }
 
@@ -809,7 +815,7 @@ Token: ${token}
       const out=[]; let cur=''; let q=false;
       for(let i=0;i<line.length;i++){
         const ch=line[i];
-        if(ch==='\"'){ if(q && line[i+1]==='\"'){ cur+='\"'; i++; } else { q=!q; } }
+        if(ch=='"'){ if(q && line[i+1]=='"'){ cur+='"'; i++; } else { q=!q; } }
         else if(ch===sep && !q){ out.push(cur); cur=''; }
         else cur+=ch;
       }
